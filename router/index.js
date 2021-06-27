@@ -1,1 +1,2 @@
-exports.main          = require('./main');
+exports.main       = require('./main');
+exports.openapi    = require('./openapi');
