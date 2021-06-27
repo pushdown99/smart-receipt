@@ -7,13 +7,13 @@ const lib     = require('../lib');
 module.exports = function(app) {
 
   app.post('/check-in/', function (req, res) {
-    var name = req.body.name;
-    var uid  = req.body.uid;
-    var rcn  = req.body.rcn;
-    var mac  = req.body.mac;
+    var name = req.body.Name;
+    var uid  = req.body.Uid;
+    var rcn  = req.body.Rcn;
+    var mac  = req.body.Mac;
     var token = lib.utils.generatekey('none',32);
     console.log(name, mac, token);
-    var result = lib.mysql.getLicenseWithMac([mac]);
+    var result = lib.mysql.getLicenseWithUid([uid]);
     if (result == undefined) {
       lib.mysql.putLicense ([name, uid, rcn, mac, token]);
       result = lib.mysql.getLicenseWithMac([mac]);
