@@ -21,6 +21,10 @@ module.exports = function(app) {
     res.json(result)
   });
 
+  app.post('/heartbeat/', function (req, res) {
+    res.json({});
+  });
+
   app.get('/receipt/:uid/:rno', function (req, res) {
     var uid = req.params.uid;
     var rno = req.params.rno;
