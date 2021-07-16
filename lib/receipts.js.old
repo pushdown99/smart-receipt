@@ -108,6 +108,10 @@ module.exports = function(app) {
         escp = escp.replace("202020202020202020202020202020202020202020202020202020202020202020202020202020200d0a","1b6d");
         console.log (escp);
         var data = lib.escp(escp); // ESC/P decode
+        //data = lib.utils.remove_non_ascii(data);
+        //const detectCharacterEncoding = require('detect-character-encoding');
+        //const charsetMatch = detectCharacterEncoding(Buffer.from(data));
+        //console.log(charsetMatch);
 
         // Find Receipt Format
         if(data.indexOf('☞ 도 서 위 치 ☜') < 0 
@@ -116,7 +120,6 @@ module.exports = function(app) {
           console.log(`txt/${rcn}.${out}.txt`);
           lib.utils.write(`esc/${rcn}.${out}.esc`, escp);
           lib.utils.write(`txt/${rcn}.${out}.txt`, data);
-          lib.pdf        (`pdf/${rcn}.${out}.pdf`, data);
 
           lib.parser (data, function (err, parsed) {
             if (parsed != undefined) {
@@ -132,6 +135,68 @@ module.exports = function(app) {
                 console.log("TITLE:", lists[i].title, "ISBN:", lists[i].isbn, "QTY:", lists[i].qty, "UNIT:", lists[i].unit, "PRICE:", lists[i].price);
                 lib.mysql.putBook ([parsed.rno, uid, result.name, result.rcn, `${rcn}.${out}`, lists[i].title, lists[i].isbn, lists[i].qty, lists[i].unit, lists[i].price]);
               }
+
+              /*
+              if (parsed.count == undefined) parsed.count = 0;
+              parsed.rno   = parsed.rno.split(' ')[0];
+              parsed.total = parsed.total.split(' ')[0];
+              var items  = parsed.items.split(' ');
+              var result = lib.mysql.getLicenseWithUid([uid]);
+              console.log (result);
+              console.log("COUNT:", parsed.count, "TOTAL:",parsed.total, "RNO:",parsed.rno, "#:", items.length, "ITEMS:",items);
+              console.log("==================================================================");
+
+              //lib.mysql.putReceipt ([uid, parsed.rno, name, rcn, escp, data, parsed.items]);
+              var nrow = 0;
+              var ncol = 0;
+              switch (rcn) {
+              case "402-91-74980": // 웅진
+              case "418-05-55695": // 웅진서적(효자점)
+              case "180-30-00939": // 청동북카페
+              case "418-05-56622": // 북닷컴&세종문고
+              case "167-65-00224": // 소소당
+              case "402-91-24375": // 민중서관
+              case "281-08-01337": // 전북서적
+                ncol = 4;
+                nrow = items.length/ncol;
+                for (var i=0; i<nrow; i++) {
+                  lib.mysql.putBook ([parsed.rno, uid, result.name, result.rcn, `${rcn}.${out}`, items[i*ncol+0].replace(/[,*@]/g,''), items[i*ncol+1].replace(/[,*@]/g,''),items[i*ncol+3].replace(/[,*@]/g,''),items[i*ncol+2].replace(/[,*@]/g,''),items[i*ncol+3].replace(/[,*@]/g,'')]);
+                }
+                break;
+              case "418-90-32548": // 홍지서림(아중점)
+              case "418-90-33246": // 홍지서림(송천점)
+              case "402-91-62194": // 홍지서림(효자점)
+              case "402-91-61986": // 홍지서림(본점)
+              case "402-91-18062": // 일도문고
+              case "325-65-00422": // 고래의꿈
+                ncol = 5;
+                nrow = items.length/ncol;
+                for (var i=0; i<nrow; i++) {
+                  lib.mysql.putBook ([parsed.rno, uid, result.name, result.rcn, `${rcn}.${out}`, items[i*ncol+0].replace(/[,*@]/g,''), items[i*ncol+1].replace(/[,*@]/g,''),items[i*ncol+2].replace(/[,*@]/g,''),items[i*ncol+3].replace(/[,*@]/g,''),items[i*ncol+4].replace(/[,*@]/g,'')]);
+                }
+                break;
+              case "107-96-10480": // 문필서림
+              case "402-91-41622": // 호남문고(서신점)
+              case "402-90-24465": // 호남문고(인후점)
+              case "402-91-85412": // 월림문고
+                ncol = 6;
+                nrow = items.length/ncol;
+                for (var i=0; i<nrow; i++) {
+                  lib.mysql.putBook ([parsed.rno, uid, result.name, result.rcn, `${rcn}.${out}`, items[i*ncol+1].replace(/[,*@]/g,''), items[i*ncol+2].replace(/[,*@]/g,''),items[i*ncol+4].replace(/[,*@]/g,''),items[i*ncol+3].replace(/[,*@]/g,''),items[i*ncol+5].replace(/[,*@]/g,'')]);
+                }
+                break;
+              case "402-98-44934": // 중앙서림
+              case "402-90-56813": // 신 문광서림
+              case "382-44-00717": // 서울서점
+              case "402-90-67800": // 세종문고
+                ncol = 6;
+                nrow = items.length/ncol;
+                for (var i=0; i<nrow; i++) {
+                  lib.mysql.putBook ([parsed.rno, uid, result.name, result.rcn, `${rcn}.${out}`, items[i*ncol+1].replace(/[,*@]/g,''), items[i*ncol+2].replace(/[,*@]/g,''),items[i*ncol+3].replace(/[,*@]/g,''),items[i*ncol+4].replace(/[,*@]/g,''),items[i*ncol+5].replace(/[,*@]/g,'')]);
+                }
+                break;
+              }
+              */
             }
             else {
               console.log("FINDING PARSER FAIL:");
@@ -146,27 +211,4 @@ module.exports = function(app) {
     }
     res.json({});
   });
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //
-  // File download & viewer
-  //
-  app.get('/pdf/:f', (req, res) => {
-    let f = req.params.f;
-    let d = 'pdf';
-    let p = `${d}/${f}`;
-    let data = require('fs').readFileSync(p);
-    res.contentType("application/pdf");
-    res.send (data);
-  });
-
-  app.get('/txt/:f', (req, res) => {
-    let f = req.params.f;
-    let d = 'txt';
-    let p = `${d}/${f}`;
-    let data = require('fs').readFileSync(p);
-    res.contentType("text/html");
-    res.send (data);
-  });
-
 };
