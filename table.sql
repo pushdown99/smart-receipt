@@ -39,6 +39,19 @@ CREATE TABLE IF NOT EXISTS receipt (
   registered   timestamp DEFAULT CURRENT_TIMESTAMP -- 등록시간
 );
 
+DROP TABLE receipts;
+CREATE TABLE IF NOT EXISTS receipts (
+  id           int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  uid          varchar(64) NOT NULL,       -- 가맹점ID
+  rno          varchar(64) NOT NULL,       -- 영수증번호ID
+  cname        varchar(64) NOT NULL,       -- 상호명
+  rcn          varchar(64) NOT NULL,       -- 사업자등록번호
+  fname        varchar(256) NOT NULL,      -- 파일이름
+  items        varchar(8192) NOT NULL,     -- 물품목록
+  registered   timestamp DEFAULT CURRENT_TIMESTAMP -- 등록시간
+);
+
+
 DROP TABLE books;
 CREATE TABLE IF NOT EXISTS books (
   id           int NOT NULL AUTO_INCREMENT PRIMARY KEY,

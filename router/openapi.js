@@ -45,19 +45,34 @@ module.exports = function(app) {
     res.json({});
   });
 
-  app.get('/receipt/:uid/:rno', function (req, res) {
+  app.get('/receipt/uid/:uid/:rno', function (req, res) {
     var uid = req.params.uid;
     var rno = req.params.rno;
-    var ret = lib.mysql.findReceipt([uid, rno]);
+    var ret = lib.mysql.findReceiptUidRno([uid, rno]);
     if (ret != undefined) { res.json({code:200, data:ret}) }
     else { res.json({code:404}) };
   });
 
+  app.get('/receipt/rcn/:rcn/:rno', function (req, res) {
+    var rcn = req.params.rcn;
+    var rno = req.params.rno;
+    var ret = lib.mysql.findReceiptRcnRno([rcn, rno]);
+    if (ret != undefined) { res.json({code:200, data:ret}) }
+    else { res.json({code:404}) };
+  });
+
+  app.get('/receipt/list/:limit', function (req, res) {
+    var num = parseInt(req.params.limit);
+    var ret = lib.mysql.getReceipt([num]);
+    if (ret != undefined) { res.json({code:200, data:ret}) }
+  });
+  /*
   app.get('/generate/:uid/:rno', function (req, res) {
     var uid = req.params.uid;
     var rno = req.params.rno;
     lib.utils.postJSON(`/receipt/probe/${uid}`, {Data:lib.utils.genReceiptBody1(rno)});
     res.json({})
   });
+  */
 
 };

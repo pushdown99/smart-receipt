@@ -39,6 +39,15 @@ module.exports = function (app) {
   });
   */
   
+  app.get("/dashboard", function(req, res, next) {
+    res.render("dashboard");
+  });
+  app.get("/receipts", function(req, res, next) {
+    res.render("receipts");
+  });
+  app.get("/about", function(req, res, next) {
+    res.render("about");
+  });
   return app;
 };
  

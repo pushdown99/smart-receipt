@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="au theme template">
+  <meta name="author" content="Hau Nguyen">
+  <meta name="keywords" content="au theme template">
+  <title>Dashboard</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" media="all">
+  <link href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css" rel="stylesheet" media="all">
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.0/moment.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+  <script src="/js/moment.min.js"></script>
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <link rel="stylesheet" href="/css/adminlte.min.css">
+  <link rel="stylesheet" href="/css/burger.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/mdi-font/css/material-design-iconic-font.min.css">
+</head>
+
+<body>
+  <div class="b-nav">
+    <li><a class="b-link b-link--active" href="/dashboard">Home</a></li>
+    <li><a class="b-link" href="/receipts">Receipts</a></li>
+    <li><a class="b-link" href="/about">About</a></li>
+  </div>
+  <div class="b-container">
+    <div class="b-menu"><div class="b-bun b-bun--top"></div><div class="b-bun b-bun--mid"></div><div class="b-bun b-bun--bottom"></div></div>
+    <a href="/dashboard" class="b-brand"><i class="zmdi zmdi-eye zmdi-hc-2x"></i><strong>&nbsp;&nbsp;도서포인트연동시스템&nbsp;&nbsp;</strong></a>
+  </div>
+  <script src="/js/burger.min.js"></script>
+  <br><br><br><br><br>
+
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-info">
+            <div class="inner"><h3><div
+                  id="stores">0</div></h3><p>판매시점관리기</p></div><div class="icon"><i class="ion ion-bag"></i></div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-success">
+            <div class="inner"><h3><div id="today-book">0</div></h3><p>금일 판매도서</p></div><div class="icon"><i class="ion
+            ion-ios-book"></i></div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-warning">
+            <div class="inner"><h3><div id="today-receipt">0</div></h3><p>금일 영수증발급</p></div><div class="icon"><i class="ion ion-ios-paper"></i></div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-danger">
+            <div class="inner"><h3><div id="today-sales">0</div></h3><p>금일
+              전체매출</p></div><div class="icon"><i class="ion ion-cash"></i></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12 col-sm-12">
+      <hr><br>
+      <h5>서점/판매시점관리기 리스트</h5>
+      <div id="bookstore"></div>
+    </div>
+    <div class="col-md-12 col-sm-12">
+      <hr><br>
+      <h5>최근 판매도서</h5>
+      <div id="books"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Receipt</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <object id="pdf" frame-resize data="/pdf/Qmd1TxZLRRiGMiSyUWHFWDe6SGUq4X8zaxH9VKWm1zZ1Do" type="application/pdf" width="100%" height="900px"></object>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script type="text/javascript">
+  var viewReceipt = null;
+</script>
+<script type="text/javascript">
+jQuery(document).ready(function() {
+  viewReceipt = function (file) {
+    console.log('call viewReceipt:', file);
+    $("#exampleModal").on("shown.bs.modal", function () { 
+       $(this).find('.modal-body').css({
+              width:'auto', //probably not needed
+              height:'auto', //probably not needed 
+              'max-height':'100%'
+       });
+       $(this).find("#pdf").attr("data", '/pdf/' + file + '.pdf');
+    }).modal('show');
+  }
+
+  function getBookStoreTbl () {
+    $.getJSON("/bookstore", function(data) {
+      console.log(data);
+      blocks = data;
+      var stores = document.getElementById("stores");
+      stores.innerHTML = data.length;
+      var info  = document.getElementById("bookstore");
+      html = '<div class="table-responsive">';
+      html += '<table id="bookstore-table" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">';
+      html += '<thead>';
+      html += '<tr>';
+      html += '<th>순번</th>';
+      html += '<th>서점명</th>';
+      html += '<th>사업자번호</th>';
+      html += '<th>하드웨어주소</th>';
+      html += '<th>보고</th>';
+      html += '<th>상태</th>';
+      html += '</tr>';
+      html += '</thead>';
+      html += '<tbody>';
+      $.each(data, function(i, t) {
+        var diff  = moment().unix() - moment(t.updated).unix();
+        html += '<tr>';
+        html += '<td>' + i + '</td>';
+        html += '<td>' + t.name + '</td>';
+        html += '<td>' + t.rcn + '</td>';
+        html += '<td>' + t.mac + '</td>';
+        html += '<td>' + moment(t.updated).format('YYYY-MM-DD HH:mm:ss') + '</td>';
+        if(diff < 400) {
+          html += '<td><div class="led-green"></div></td>';
+        }
+        else {
+          html += '<td><div class="led-red"></div></td>';
+        }
+        html += '</tr>';
+      });
+      html += '</tbody>';
+      html += '</table>';
+      html += '</div>';
+      info.innerHTML = html;
+      $('#bookstore-table').DataTable({
+        "pagingType": "numbers", // "simple" option for 'Previous' and 'Next' buttons only
+        "searchable": false,
+        "pageLength": 10
+      });
+    });
+    setTimeout(getBookStoreTbl, 60000);
+  }
+
+  function getBookTbl () {
+    $.getJSON("/books", function(data) {
+      console.log(data);
+      var info  = document.getElementById("books");
+      html = '<div class="table-responsive">';
+      html += '<table id="book-table" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">';
+      html += '<thead>';
+      html += '<tr>';
+      html += '<th>순번</th>';
+      html += '<th>영수증번호</th>';
+      html += '<th>책제목</th>';
+      html += '<th>도서번호</th>';
+      html += '<th>수량</th>';
+      html += '<th>단가</th>';
+      html += '<th>합계</th>';
+      html += '<th>서점명</th>';
+      html += '<th>사업자번호</th>';
+      html += '<th>구매일시</th>';
+      html += '</tr>';
+      html += '</tr>';
+      html += '</thead>';
+      html += '<tbody>';
+      $.each(data, function(i, t) {
+        html += '<tr>';
+        html += '<td>' + i + '</td>';
+        html += '<td><a href="/pdf/'+t.fname+'.pdf" target="_blank">' + t.rno + '</a></td>';
+        html += '<td><a href="/pdf/'+t.fname+'.pdf" target="_blank">' + t.name + '</a></td>';
+        if (t.isbn == "0000000000000") {
+        html += '<td>' + t.isbn + '</td>';
+        }
+        else {
+        html += '<td><a href="/isbn/'+t.isbn+'" target="_blank">' + t.isbn + '</a></td>';
+        }
+        html += '<td>' + t.qty + '</td>';
+        html += '<td>' + t.unit.toLocaleString() + '</td>';
+        html += '<td>' + t.price.toLocaleString() + '</td>';
+        html += '<td>' + t.cname + '</td>';
+        html += '<td>' + t.rcn + '</td>';
+        html += '<td>' + moment(t.registered).format('YYYY-MM-DD HH:mm:ss') + '</td>';
+        html += '</tr>';
+      });
+      html += '</tbody>';
+      html += '</table>';
+      html += '</div>';
+      info.innerHTML = html;
+      $('#book-table').DataTable({
+        "pagingType": "numbers", // "simple" option for 'Previous' and 'Next' buttons only
+        "searchable": false,
+        "pageLength": 25
+      });
+    });
+    setTimeout(getBookTbl, 60000);
+  }
+
+  function getBookToday () {
+    $.getJSON("/today-book", function(data) {
+      var info  = document.getElementById("today-book");
+      info.innerHTML = data.length.toLocaleString();
+    });
+    setTimeout(getBookToday, 5000);
+  }
+  function getReceiptToday () {
+    $.getJSON("/today-receipt", function(data) {
+      var info  = document.getElementById("today-receipt");
+      info.innerHTML = data.length.toLocaleString();
+    });
+    setTimeout(getReceiptToday, 5000);
+  }
+  function getSalesToday () {
+    $.getJSON("/today-sales", function(data) {
+        console.log(data);
+      var info  = document.getElementById("today-sales");
+      info.innerHTML = data[0].sales.toLocaleString();
+    });
+    setTimeout(getSalesToday, 5000);
+  }
+  ///////////////////////////////////////////////////////////////
+
+  getBookStoreTbl ();
+  getBookTbl ();
+  getBookToday ();
+  getReceiptToday ();
+  getSalesToday ();
+
+});
+</script>
+<script src="https://unpkg.com/ionicons@5.2.3/dist/ionicons.js"></script>
+
+</body>
+
+</html>
