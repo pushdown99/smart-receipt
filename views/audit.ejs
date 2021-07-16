@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script src="/js/moment.min.js"></script>
+    <style>
+    body {
+    font-family: Roboto Slab,Helvetica,Arial,sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -ms-overflow-style: scrollbar;
+    -webkit-tap-highlight-color: transparent;
+    }
+    body {
+    --code-font-family: Menlo,Monaco,Consolas,monospace;
+    --font-weight: 400;
+    --font-weight-bold: 700;
+    --font-weight-heading: 400;
+    --text-muted: #888;
+    --gray-bg: rgba(0,0,0,0.025);
+    --gray-text: #666;
+    --menu-text: #bbb;
+    --body-color: #333;
+    --body-bg: #fff;
+    --border-color: #ebebeb;
+    }
+    img {
+      -webkit-transform: scaleX(-1);
+      transform: scaleX(-1);
+      -webkit-transform: scaleY(-1);
+      transform: scaleY(-1);
+    }
+</style>
+</head>
+<body>
+  <div class="container">
+  <h1>서점</h1>
+  <hr>
+  </br>
+  <div class="row">
+    <div id="audit">
+    </div>
+<script>
+  $.getJSON('/json/audit/', function(data) {
+
+    var h = '<table class="table">';
+    h += '<thead>';
+    h += '  <tr>';
+    h += '    <th scope="col">#</th>';
+    h += '    <th scope="col">Name</th>';
+    h += '    <th scope="col">Uid</th>';
+    h += '    <th scope="col">Rcn</th>';
+    h += '    <th scope="col">Mac</th>';
+    h += '    <th scope="col">Updated</th>';
+    h += '    <th scope="col">Duration</th>';
+    h += '  </tr>';
+    h += '</thead>';
+    h += '<tbody>';
+    data.forEach((t) => {
+      console.log (t);
+      h += '<tr>';
+      h += '<td>' + t.id + '</td>';
+      h += '<td>' + t.name + '</td>';
+      h += '<td>' + t.uid + '</td>';
+      h += '<td>' + t.rcn + '</td>';
+      h += '<td>' + t.mac + '</td>';
+      h += '<td>' + moment(t.updated).format('YYYY-MM-DD HH:mm:ss') + '</td>';
+      var minDiff = moment().diff(moment(t.updated), 'minutes');
+      h += '<td>' + minDiff + '</td>';
+      h += '</tr>';
+    });
+    h += '</tbody>';
+    h += '</table>';
+    document.getElementById("audit").innerHTML = h;
+  });
+</script>
+</body>
+</html>
+

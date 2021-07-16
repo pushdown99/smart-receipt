@@ -16,7 +16,8 @@ class TextParser
 
     /**
      * @param string $templatesDir ; The path to the template files directory
-     * @param LoggerInterface $logger ; A logger instance implementing the PSR-3 Logger interface
+     * @param LoggerInterface $logger ; A logger instance implementing the
+PSR-3 Logger interface
      */
     public function __construct($templatesDir, LoggerInterface $logger = null)
     {
@@ -32,7 +33,8 @@ class TextParser
      * The call for action method, this is the parse job initiator
      *
      * @param string $text ; The text provided by the user for parsing
-     * @param boolean $findMatchingTemplate ; A boolean to enable the similarity match against templates before parsing (slower)
+     * @param boolean $findMatchingTemplate ; A boolean to enable the
+similarity match against templates before parsing (slower)
      * @return array The matched data array or null on unmatched text
      *
      */
@@ -44,13 +46,15 @@ class TextParser
         $matchedTemplates = $this->getTemplates($text, $findMatchingTemplate);
 
         foreach ($matchedTemplates as $templatePath => $templateContent) {
-            $this->logger->debug(sprintf('Parsing against template: %s', $templatePath));
+            $this->logger->debug(sprintf('Parsing against template: %s',
+$templatePath));
 
             $templatePattern = $this->prepareTemplate($templateContent);
             $extractedData = $this->extractData($text, $templatePattern);
 
             if ($extractedData) {
-                $this->logger->info(sprintf('Data extracted: %s', json_encode($extractedData)));
+                $this->logger->info(sprintf('Data extracted: %s',
+json_encode($extractedData)));
 
                 return $extractedData;
             }
@@ -60,10 +64,12 @@ class TextParser
     }
 
     /**
-     * Returns array of available template patterns or performs a similarity match (slower) to return best match template
+     * Returns array of available template patterns or performs a similarity
+match (slower) to return best match template
      *
      * @param string $text ; The text provided by the user for parsing
-     * @param boolean $findMatchingTemplate ; A boolean to enable the similarity match against templates before parsing
+     * @param boolean $findMatchingTemplate ; A boolean to enable the
+similarity match against templates before parsing
      * @return array
      */
     protected function getTemplates($text, $findMatchingTemplate)
@@ -78,7 +84,8 @@ class TextParser
                 continue;
             }
 
-            $templates[$fileInfo->getPathname()] = file_get_contents($fileInfo->getPathname());
+            $templates[$fileInfo->getPathname()]
+= file_get_contents($fileInfo->getPathname());
         }
 
         return $templates;
@@ -97,11 +104,13 @@ class TextParser
             throw new \Exception('Invalid templates directory provided');
         }
 
-        $this->directoryIterator = new DirectoryIterator(rtrim($templatesDir, '/'));
+        $this->directoryIterator = new DirectoryIterator(rtrim($templatesDir,
+'/'));
     }
 
     /**
-     * Prepares the provided text for parsing by escaping known characters and removing exccess whitespaces
+     * Prepares the provided text for parsing by escaping known characters and
+removing exccess whitespaces
      *
      * @param string $txt ; The text provided by the user for parsing
      * @return string; The prepared clean text
@@ -116,7 +125,8 @@ class TextParser
     }
 
     /**
-     * Prepares the matched template text for parsing by escaping known characters and removing excess whitespaces
+     * Prepares the matched template text for parsing by escaping known
+characters and removing excess whitespaces
      *
      * @param string $templateTxt ; The matched template contents
      * @return string; The prepared clean template pattern
@@ -134,16 +144,19 @@ class TextParser
             ' ',                 // 2 ...with a single space
         ];
 
-        $templateTxt = preg_replace($patterns, $replacements, preg_quote($templateTxt, '/'));
+        $templateTxt = preg_replace($patterns, $replacements,
+preg_quote($templateTxt, '/'));
 
         return trim($templateTxt);
     }
 
     /**
-     * Extracts the named variables values from within the text based on the provided template
+     * Extracts the named variables values from within the text based on the
+provided template
      *
      * @param string $text ; The prepared text provided by the user for parsing
-     * @param string $template ; The template regex pattern from the matched template
+     * @param string $template ; The template regex pattern from the matched
+template
      * @return array|bool; The matched data array or false on unmatched text
      *
      */
@@ -164,7 +177,8 @@ class TextParser
     }
 
     /**
-     * Removes unwanted stuff from the data array like html tags and extra spaces
+     * Removes unwanted stuff from the data array like html tags and extra
+spaces
      *
      * @param mixed $matches ; Array with matched strings
      * @return array; The clean data array
@@ -177,7 +191,8 @@ class TextParser
 
 
     /**
-     * A callback method to remove unwanted stuff from the extracted data element
+     * A callback method to remove unwanted stuff from the extracted data
+element
      *
      * @param string $value ; The extracted text from the matched element
      * @return string; clean/stripped text
@@ -189,10 +204,12 @@ class TextParser
     }
 
     /**
-     * Iterates through the templates directory to find the closest template pattern that matches the provided text
+     * Iterates through the templates directory to find the closest template
+pattern that matches the provided text
      *
      * @param string $text ; The text provided by the user for parsing
-     * @return array; The matched template contents with its path as a key or empty array if none matched
+     * @return array; The matched template contents with its path as a key or
+empty array if none matched
      *
      */
     protected function findTemplate($text)

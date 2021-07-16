@@ -22,11 +22,11 @@ app.use(express.static(__dirname + '/public'));
 // Middleware
 app.use(function (req, res, next) {
   req.timestamp  = moment().unix();
-  req.receivedAt = moment().tz('Asia/Seoul').format('YYYY-MM-DD hh:mm:ss');
+  req.receivedAt = moment().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss');
 
   switch(req.method) {
-  case "GET":  console.log(req.receivedAt, req.protocol.toUpperCase(), req.method, req.url, req.params); break;
-  case "POST": console.log(req.receivedAt, req.protocol.toUpperCase(), req.method, req.url, req.body);   break;
+  case "GET":  console.log(req.receivedAt, req.protocol.toUpperCase(), req.method, req.url, JSON.stringify(req.params)); break;
+  case "POST": console.log(req.receivedAt, req.protocol.toUpperCase(), req.method, req.url, JSON.stringify(req.body));   break;
   } next();
 });
 

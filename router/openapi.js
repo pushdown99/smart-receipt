@@ -4,7 +4,13 @@ const moment  = require('moment-timezone');
 const router  = require('.');
 const lib     = require('../lib');
 
+let nance = 0;
+
 module.exports = function(app) {
+
+  app.get('/audit/', function (req, res) {
+    res.render('audit');
+  });
 
   app.post('/check-in/', function (req, res) {
     var name = req.body.Name;
@@ -22,6 +28,20 @@ module.exports = function(app) {
   });
 
   app.post('/heartbeat/', function (req, res) {
+    var name = req.body.Name;
+    var uid  = req.body.Uid;
+    var rcn  = req.body.Rcn;
+    var mac  = req.body.Mac;
+
+    nance += 1
+    var result = lib.mysql.getAuditWithRcnUidMac([rcn, uid, mac]);
+    if (result == undefined) {
+      lib.mysql.putAudit ([name, uid, rcn, mac, nance]);
+    }
+    else {
+      lib.mysql.updAudit ([nance, rcn, uid, mac]);
+    }
+
     res.json({});
   });
 

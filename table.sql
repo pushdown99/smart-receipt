@@ -14,6 +14,17 @@ CREATE TABLE IF NOT EXISTS license (
   registered   timestamp DEFAULT CURRENT_TIMESTAMP -- 등록시간
 );
 
+DROP TABLE audit;
+CREATE TABLE IF NOT EXISTS audit (
+  id           int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name         varchar(64) NOT NULL,               -- 상호명
+  uid          varchar(64) NOT NULL,               -- 가맹점ID
+  rcn          varchar(64) NOT NULL,               -- 사업자등록번호
+  mac          varchar(64) NOT NULL UNIQUE,        -- 하드웨어주소
+  nance        int NOT NULL,
+  updated      timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- 변경시간
+);
+
 DROP TABLE receipt;
 CREATE TABLE IF NOT EXISTS receipt (
   id           int NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -25,6 +36,22 @@ CREATE TABLE IF NOT EXISTS receipt (
   text         varchar(8192) NOT NULL,     -- 텍스트
   items        varchar(8192) NOT NULL,     -- 물품목록
   updated      timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- 변경시간
+  registered   timestamp DEFAULT CURRENT_TIMESTAMP -- 등록시간
+);
+
+DROP TABLE books;
+CREATE TABLE IF NOT EXISTS books (
+  id           int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  rno          varchar(64) NOT NULL,       -- 영수증번호ID
+  uid          varchar(64) NOT NULL,       -- 가맹점ID
+  cname        varchar(64) NOT NULL,       -- 상호명
+  rcn          varchar(64) NOT NULL,       -- 사업자등록번호
+  fname        varchar(64) NOT NULL,       -- 파일이름
+  name         varchar(64) NOT NULL,       -- 책이름
+  isbn         varchar(32) NOT NULL,       -- ISBN
+  qty          int,
+  unit         int,
+  price        int,
   registered   timestamp DEFAULT CURRENT_TIMESTAMP -- 등록시간
 );
 

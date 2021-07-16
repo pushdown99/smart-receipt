@@ -1,8 +1,0 @@
-DB_HOSTNAME=localhost
-DB_USERNAME=sqladmin
-DB_PASSWORD=admin
-DB_DATABASE=hancom
-
-PORT_HTTP=80
-PORT_HTTPS=443
-
