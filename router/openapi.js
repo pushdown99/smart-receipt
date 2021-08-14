@@ -3,6 +3,7 @@
 const moment  = require('moment-timezone');
 const router  = require('.');
 const lib     = require('../lib');
+const server  = "https://smart.hancomlifecare.com"
 
 let nance = 0;
 
@@ -49,6 +50,12 @@ module.exports = function(app) {
     var uid = req.params.uid;
     var rno = req.params.rno;
     var ret = lib.mysql.findReceiptUidRno([uid, rno]);
+    ret.items = JSON.parse(ret.items);
+    ret.registered = moment(ret.registered).format("YYYY-MM-DD HH:mm:ss");
+    ret.pdf = server +"/pdf/"+ret.fname+".pdf";
+    ret.txt = server +"/txt/"+ret.fname+".txt";
+    ret.esc = server +"/esc/"+ret.fname+".esc";
+    console.log(ret.items);
     if (ret != undefined) { res.json({code:200, data:ret}) }
     else { res.json({code:404}) };
   });
@@ -57,6 +64,12 @@ module.exports = function(app) {
     var rcn = req.params.rcn;
     var rno = req.params.rno;
     var ret = lib.mysql.findReceiptRcnRno([rcn, rno]);
+    ret.items = JSON.parse(ret.items);
+    ret.registered = moment(ret.registered).format("YYYY-MM-DD HH:mm:ss");
+    ret.pdf = server +"/pdf/"+ret.fname+".pdf";
+    ret.txt = server +"/txt/"+ret.fname+".txt";
+    ret.esc = server +"/esc/"+ret.fname+".esc";
+    console.log(ret.items);
     if (ret != undefined) { res.json({code:200, data:ret}) }
     else { res.json({code:404}) };
   });
@@ -64,15 +77,31 @@ module.exports = function(app) {
   app.get('/receipt/list/:limit', function (req, res) {
     var num = parseInt(req.params.limit);
     var ret = lib.mysql.getReceipt([num]);
-    if (ret != undefined) { res.json({code:200, data:ret}) }
+    if (ret != undefined) {
+      for (var i=0;i<ret.length;i++) {
+        ret[i].items = JSON.parse(ret[i].items);
+        ret[i].registered = moment(ret[i].registered).format("YYYY-MM-DD HH:mm:ss");
+        ret[i].pdf = server +"/pdf/"+ret[i].fname+".pdf";
+        ret[i].txt = server +"/txt/"+ret[i].fname+".txt";
+        ret[i].esc = server +"/esc/"+ret[i].fname+".esc";
+      }
+      res.json({code:200, data:ret});
+    }
   });
-  /*
-  app.get('/generate/:uid/:rno', function (req, res) {
-    var uid = req.params.uid;
-    var rno = req.params.rno;
-    lib.utils.postJSON(`/receipt/probe/${uid}`, {Data:lib.utils.genReceiptBody1(rno)});
-    res.json({})
-  });
-  */
 
+  app.get('/receipt/list/:rcn/:limit', function (req, res) {
+    var num = parseInt(req.params.limit);
+    var rcn = parseInt(req.params.rcn);
+    var ret = lib.mysql.getReceiptRcn([rcn, num]);
+    if (ret != undefined) {
+      for (var i=0;i<ret.length;i++) {
+        ret[i].items = JSON.parse(ret[i].items);
+        ret[i].registered = moment(ret[i].registered).format("YYYY-MM-DD HH:mm:ss");
+        ret[i].pdf = server +"/pdf/"+ret[i].fname+".pdf";
+        ret[i].txt = server +"/txt/"+ret[i].fname+".txt";
+        ret[i].esc = server +"/esc/"+ret[i].fname+".esc";
+      }
+      res.json({code:200, data:ret});
+    }
+  });
 };

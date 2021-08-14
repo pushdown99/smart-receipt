@@ -17,6 +17,7 @@ module.exports = function (app) {
   lib.mysql.connect (process.env.DB_HOSTNAME, process.env.DB_USERNAME, process.env.DB_PASSWORD, process.env.DB_DATABASE, verbose);
 
   lib.receipts (app);
+  lib.upload (app);
   router.json (app);
   router.openapi (app);
 

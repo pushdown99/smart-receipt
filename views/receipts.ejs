@@ -44,11 +44,46 @@
   </div>
 </div>
 
+<!-- Modal -->
+<div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Receipt</h5>
+        <button type="button" class="close" data-dismiss="modal"
+aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <object id="pdf" frame-resize data="" type="application/pdf" width="100%"
+height="900px"></object>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
 <script type="text/javascript">
   var viewReceipt = null;
 </script>
 <script type="text/javascript">
 jQuery(document).ready(function() {
+
+  viewReceipt = function (file) {
+    console.log('call viewReceipt:', file);
+    $("#exampleModal").on("shown.bs.modal", function () {
+       $(this).find('.modal-body').css({
+              width:'auto', //probably not needed
+              height:'auto', //probably not needed
+              'max-height':'100%'
+       });
+       $(this).find("#pdf").attr("data", file);
+    }).modal('show');
+  }
 
   function getReceiptTbl () {
     $.getJSON("/receipt/list", function(data) {
@@ -72,7 +107,8 @@ jQuery(document).ready(function() {
       $.each(data, function(i, t) {
         html += '<tr>';
         html += '<td>' + i + '</td>';
-        html += '<td><a href="/pdf/'+t.fname+'.pdf" target="_blank">' + t.rno + '</a></td>';
+        //html += '<td><a href="/pdf/'+t.fname+'.pdf" target="_blank">' + t.rno + '</a></td>';
+        html += '<td><a href="javascript:viewReceipt(\''+'/pdf/'+t.fname+'.pdf\');">' + t.rno + '</a></td>'; 
         html += '<td>' + t.cname + '</td>';
         html += '<td>' + t.rcn + '</td>';
         html += '<td><pre>' + JSON.stringify(JSON.parse(t.items),undefined,2) + '</pre></td>';

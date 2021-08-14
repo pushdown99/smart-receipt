@@ -97,7 +97,27 @@
         </button>
       </div>
       <div class="modal-body">
-      <object id="pdf" frame-resize data="/pdf/Qmd1TxZLRRiGMiSyUWHFWDe6SGUq4X8zaxH9VKWm1zZ1Do" type="application/pdf" width="100%" height="900px"></object>
+      <object id="pdf" frame-resize data="" type="application/pdf" width="100%" height="900px"></object>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Modal -->
+<div>
+<div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog"
+aria-labelledby="exampleModal1Label" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModal1Label">Receipt</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <object id="txt" frame-resize data="" type="text/html" width="100%" height="900px"></object>
       </div>
     </div>
   </div>
@@ -117,7 +137,19 @@ jQuery(document).ready(function() {
               height:'auto', //probably not needed 
               'max-height':'100%'
        });
-       $(this).find("#pdf").attr("data", '/pdf/' + file + '.pdf');
+       $(this).find("#pdf").attr("data", file);
+    }).modal('show');
+  }
+
+  viewReceipt1 = function (file) {
+    console.log('call viewReceipt1:', file);
+    $("#exampleModal1").on("shown.bs.modal", function () {
+       $(this).find('.modal-body').css({
+              width:'auto', //probably not needed
+              height:'auto', //probably not needed
+              'max-height':'100%'
+       });
+       $(this).find("#txt").attr("data", file);
     }).modal('show');
   }
 
@@ -166,6 +198,7 @@ jQuery(document).ready(function() {
         "searchable": false,
         "pageLength": 10
       });
+      data = null;
     });
     setTimeout(getBookStoreTbl, 60000);
   }
@@ -181,6 +214,8 @@ jQuery(document).ready(function() {
       html += '<th>순번</th>';
       html += '<th>영수증번호</th>';
       html += '<th>책제목</th>';
+      html += '<th>텍스트</th>';
+      html += '<th>데이터</th>';
       html += '<th>도서번호</th>';
       html += '<th>수량</th>';
       html += '<th>단가</th>';
@@ -195,17 +230,26 @@ jQuery(document).ready(function() {
       $.each(data, function(i, t) {
         html += '<tr>';
         html += '<td>' + i + '</td>';
-        html += '<td><a href="/pdf/'+t.fname+'.pdf" target="_blank">' + t.rno + '</a></td>';
-        html += '<td><a href="/pdf/'+t.fname+'.pdf" target="_blank">' + t.name + '</a></td>';
+        //html += '<td><a href="/pdf/'+t.fname+'.pdf" target="_blank">' + t.rno + '</a></td>';
+        html += '<td><a href="javascript:viewReceipt(\''+'/pdf/'+t.fname+'.pdf\');">' + t.rno + '</a></td>';
+        //html += '<td><a href="/pdf/'+t.fname+'.pdf" target="_blank">' + t.name + '</a></td>';
+        html += '<td><a href="javascript:viewReceipt(\''+'/pdf/'+t.fname+'.pdf\');">' + t.name + '</a></td>';
+        html += '<td><a href="javascript:viewReceipt1(\''+'/htm/'+t.fname+'.htm\');">view</a></td>';
+        html += '<td><a href="javascript:viewReceipt1(\''+'/esc/'+t.fname+'.esc\');">view</a></td>';
         if (t.isbn == "0000000000000") {
         html += '<td>' + t.isbn + '</td>';
         }
         else {
-        html += '<td><a href="/isbn/'+t.isbn+'" target="_blank">' + t.isbn + '</a></td>';
+        let params = `scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no, width=0,height=0,left=-1000,top=-1000`;
+        //open('/', 'test', params);
+        if(t.isbn.substring(0,2) == "97") html += '<td><a href="/isbn/'+t.isbn+'" target="_blank">' + t.isbn + '</a></td>';
+        else html += '<td>' + t.isbn + '</td>';
         }
         html += '<td>' + t.qty + '</td>';
-        html += '<td>' + t.unit.toLocaleString() + '</td>';
-        html += '<td>' + t.price.toLocaleString() + '</td>';
+        if (t.unit != null) html += '<td>' + t.unit.toLocaleString() + '</td>';
+        else html += '<td></td>';
+        if (t.price != null) html += '<td>' + t.price.toLocaleString() + '</td>';
+        else html += '<td>' + t.price + '</td>';
         html += '<td>' + t.cname + '</td>';
         html += '<td>' + t.rcn + '</td>';
         html += '<td>' + moment(t.registered).format('YYYY-MM-DD HH:mm:ss') + '</td>';
@@ -220,6 +264,7 @@ jQuery(document).ready(function() {
         "searchable": false,
         "pageLength": 25
       });
+      data = null;
     });
     setTimeout(getBookTbl, 60000);
   }
@@ -228,23 +273,28 @@ jQuery(document).ready(function() {
     $.getJSON("/today-book", function(data) {
       var info  = document.getElementById("today-book");
       info.innerHTML = data.length.toLocaleString();
+      data = null;
     });
-    setTimeout(getBookToday, 5000);
+    setTimeout(getBookToday, 60000);
   }
   function getReceiptToday () {
     $.getJSON("/today-receipt", function(data) {
       var info  = document.getElementById("today-receipt");
       info.innerHTML = data.length.toLocaleString();
+      data = null;
     });
-    setTimeout(getReceiptToday, 5000);
+    setTimeout(getReceiptToday, 60000);
   }
   function getSalesToday () {
     $.getJSON("/today-sales", function(data) {
-        console.log(data);
+      console.log(data);
       var info  = document.getElementById("today-sales");
-      info.innerHTML = data[0].sales.toLocaleString();
+      console.log(data[0].sales);
+      if(data[0].sales != null) { info.innerHTML = data[0].sales.toLocaleString(); }
+      else { info.innerHTML = 0; }
+      data = null;
     });
-    setTimeout(getSalesToday, 5000);
+    setTimeout(getSalesToday, 60000);
   }
   ///////////////////////////////////////////////////////////////
 
