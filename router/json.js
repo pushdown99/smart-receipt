@@ -24,7 +24,7 @@ module.exports = function (app) {
     res.send(JSON.stringify(result));
   });
   app.get('/receipt/list', function(req, res){
-    var result = lib.mysql.getReceipt([500]);
+    var result = lib.mysql.getReceipt([1000]);
     res.send(JSON.stringify(result));
   });
 

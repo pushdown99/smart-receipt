@@ -1,3 +1,5 @@
+               < 영 수 증 >
+ 소소당
 {%header%}
 POS1,{%pos%} NO.{%rno%}
 {%info%}
